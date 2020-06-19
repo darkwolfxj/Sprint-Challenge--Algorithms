@@ -1,3 +1,4 @@
+import time
 class SortingRobot:
     def __init__(self, l):
         """
@@ -91,14 +92,62 @@ class SortingRobot:
         Returns True if the robot's light is on and False otherwise.
         """
         return self._light == "ON"
-
+    def is_sorted(self, l):
+        truth_tracker = []
+        for ind, i in enumerate(l):
+            while ind < len(l) - 1:
+                if l[ind] < l[ind+1]:
+                    truth_tracker.append(True)
+                else:
+                    truth_tracker.append(False)
+        if False in truth_tracker:
+            return False
+        else:
+            return True
     def sort(self):
         """
         Sort the robot's list.
         """
-        # Fill this out
-        pass
+        self.set_light_on()
 
+        # While the light is on move right
+        # at first index with None, swap item
+        while self.light_is_on():
+            # Item at index is None or at start of list, swap item
+            if self.compare_item() == None:
+                self.swap_item()
+            self.move_right()
+            # end of list and holding greater item, swap item, start moving left
+            if self.can_move_right() == False and self.compare_item() == 1:
+                self.swap_item()
+                self.set_light_off()
+            # end of list, last item in hand, swap and return
+            if self.can_move_right() == False and self.compare_item() == None:
+                return
+            # end of list and item in hand is less, move left 
+            if self.can_move_right() == False and self.compare_item() == -1:
+                self.set_light_off()
+            # move left until reaching None
+            while self.light_is_on() == False:
+                if self.can_move_left():
+                    # item in hand is greater, swap and move left
+                    if self.compare_item() == 1:
+                        self.swap_item()
+                        self.move_left()
+                    # item in hand is lesser, move left
+                    if self.compare_item() == -1:
+                        self.move_left()
+                    # reached None, start to move right
+                    if self.compare_item() == None:
+                        self.set_light_on()
+            # item in hand is greater, continue moving right
+            if self.compare_item() == 1:
+                pass
+            # item in hand is lesser, swap and continue moving right
+            elif self.compare_item() == -1:
+                self.swap_item()
+        return
+        
 
 if __name__ == "__main__":
     # Test our your implementation from the command line
@@ -107,6 +156,10 @@ if __name__ == "__main__":
     l = [15, 41, 58, 49, 26, 4, 28, 8, 61, 60, 65, 21, 78, 14, 35, 90, 54, 5, 0, 87, 82, 96, 43, 92, 62, 97, 69, 94, 99, 93, 76, 47, 2, 88, 51, 40, 95, 6, 23, 81, 30, 19, 25, 91, 18, 68, 71, 9, 66, 1, 45, 33, 3, 72, 16, 85, 27, 59, 64, 39, 32, 24, 38, 84, 44, 80, 11, 73, 42, 20, 10, 29, 22, 98, 17, 48, 52, 67, 53, 74, 77, 37, 63, 31, 7, 75, 36, 89, 70, 34, 79, 83, 13, 57, 86, 12, 56, 50, 55, 46]
 
     robot = SortingRobot(l)
-
+    start_time = time.time()
     robot.sort()
+    end_time = time.time()
+    t = end_time - start_time
     print(robot._list)
+    print(f"{t}s")
+    
